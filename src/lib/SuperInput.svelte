@@ -45,8 +45,6 @@
 	const baseLabelClasses = '';
 	$: labelClasses = `${baseLabelClasses} ${labelClass}`;
 	$: inputClasses = `${baseInputClasses} ${inputClass}`;
-  console.log({$value, $errors})
-  console.log(form);
 </script>
 
 <Input
