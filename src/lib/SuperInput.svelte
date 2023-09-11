@@ -4,7 +4,7 @@
 	import type { FormPathLeaves, ZodValidation } from 'sveltekit-superforms';
 	import type { z, AnyZodObject } from 'zod';
 
-	import { Input } from '$lib/components';
+	import { Input } from '$lib';
 	import { formFieldProxy, type SuperForm } from 'sveltekit-superforms/client';
 	import { startCase } from 'lodash';
 
