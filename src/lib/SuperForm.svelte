@@ -2,7 +2,8 @@
   import type { FormPathLeaves, ZodValidation } from "sveltekit-superforms";
   import type { SuperForm } from "sveltekit-superforms/client";
   import type { AnyZodObject, z } from "zod";
-  import type { InputType, Item, LabeledIcon, SuperInput } from "$lib";
+  import type { InputType, Item } from "$lib";
+  import { LabeledIcon, SuperInput } from '$lib';
 
   type T = $$Generic<AnyZodObject>;
   type Form = SuperForm<ZodValidation<T>, unknown>;
