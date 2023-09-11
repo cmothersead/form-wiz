@@ -45,6 +45,8 @@
 	const baseLabelClasses = '';
 	$: labelClasses = `${baseLabelClasses} ${labelClass}`;
 	$: inputClasses = `${baseInputClasses} ${inputClass}`;
+  console.log({$value, $errors})
+  console.log(form);
 </script>
 
 <Input
@@ -60,7 +62,7 @@
 	{placeholder}
 	{type}
 	bind:value={$value}
-	{errors}
+	{$errors}
 	inputClass={inputClasses}
 	labelClass={labelClasses}
 	{colSpan}
