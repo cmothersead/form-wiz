@@ -19,3 +19,4 @@ export const InputType = {
 export type Item = { value: any; label: string };
 
 export { default as ChevronIcon } from './ChevronIcon.svelte';
+export const test = "Hello World";
