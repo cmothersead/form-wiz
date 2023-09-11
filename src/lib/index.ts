@@ -21,3 +21,4 @@ export type Item = { value: any; label: string };
 export { default as Form } from './SuperForm.svelte';
 export { default as Input } from './SuperInput.svelte';
 export { default as Typeahead } from './Typeahead.svelte';
+export { default as LabeledIcon } from './LabeledIcon.svelte';
