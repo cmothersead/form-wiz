@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { type Item, InputType } from '.';
-
 	import type { FormPathLeaves, ZodValidation } from 'sveltekit-superforms';
 	import type { z, AnyZodObject } from 'zod';
 
-	import { Input } from '$lib';
+	import { Input, type Item, InputType } from '$lib';
 	import { formFieldProxy, type SuperForm } from 'sveltekit-superforms/client';
 	import { startCase } from 'lodash';
 
