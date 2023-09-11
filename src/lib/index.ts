@@ -18,5 +18,6 @@ export const InputType = {
 
 export type Item = { value: any; label: string };
 
-export { default as ChevronIcon } from './ChevronIcon.svelte';
-export const test = "Hello World";
+export { default as Form } from './SuperForm.svelte';
+export { default as Input } from './SuperInput.svelte';
+export { default as Typeahead } from './Typeahead.svelte';
