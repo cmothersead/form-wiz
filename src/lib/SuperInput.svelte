@@ -29,6 +29,7 @@
     export let indexType: "string" | "number" = "string";
     export let min = "";
     export let max = "";
+    export let hidden = false;
 
     const dateTypes = [
         "date",
@@ -76,4 +77,5 @@
     {colSpan}
     {min}
     {max}
+    {hidden}
 />

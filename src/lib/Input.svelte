@@ -17,8 +17,9 @@
   export let searchable = false;
   export let min = "";
   export let max = "";
+  export let hidden = false;
 
-  export let value = "";
+  export let value: string | number | Date;
 
   export let labelClass = "";
   export let inputClass = "";
@@ -30,7 +31,12 @@
   export let colSpan = 1;
 </script>
 
-<label for={id} class={labelClasses} style="grid-column-start: span {colSpan}">
+<label
+  for={id}
+  class={labelClasses}
+  style="grid-column-start: span {colSpan}"
+  {hidden}
+>
   <span>{label}</span>
   {#if type === "text"}
     <input
