@@ -33,7 +33,7 @@
         layout != undefined ? merge(defaultLayout, layout) : defaultLayout;
 
     // const { enhance } = useEnhance ? form : dummyEnhance;
-    let fields: [keyof Layout<Form>["fields"], FieldConfig][];
+    let fields: [string, FieldConfig][];
     $: if (final.fields != undefined) {
         fields = Object.entries(final.fields);
     }

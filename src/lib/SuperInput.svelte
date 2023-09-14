@@ -1,12 +1,11 @@
 <script lang="ts">
+    import { typedFormFieldProxy } from "./index.js";
+
     import type { FormPathLeaves, ZodValidation } from "sveltekit-superforms";
     import type { z, AnyZodObject } from "zod";
 
-    import { Input, type Item, InputType } from "$lib";
-    import {
-        formFieldProxy,
-        type SuperForm,
-    } from "sveltekit-superforms/client";
+    import { Input, type Item, InputType } from "./index.js";
+    import type { SuperForm } from "sveltekit-superforms/client";
     import { startCase } from "lodash";
 
     type T = $$Generic<AnyZodObject>;
@@ -48,7 +47,7 @@
         ? indexType
         : "string";
 
-    const { value, errors } = formFieldProxy(form, field);
+    const { value, errors } = typedFormFieldProxy(form, field, superType);
 
     export let labelClass = "";
     export let inputClass = "";

@@ -1,4 +1,3 @@
-import { extend } from "lodash";
 import type {
     FormPathLeaves,
     SuperValidated,
@@ -10,6 +9,13 @@ import {
     type SuperForm,
     superForm,
     type FormOptions,
+    stringProxy,
+    intProxy,
+    booleanProxy,
+    numberProxy,
+    dateProxy,
+    fieldProxy,
+    formFieldProxy,
 } from "sveltekit-superforms/client";
 import type { SuperValidateOptions } from "sveltekit-superforms/server";
 import type { AnyZodObject, z } from "zod";
@@ -42,7 +48,7 @@ export type FieldConfig = {
     indexType?: "string" | "number";
     hidden?: boolean;
 };
-type Schema<F> = F extends ZodValidation<infer T>
+export type Schema<F> = F extends ZodValidation<infer T>
     ? T
     : F extends SuperForm<ZodValidation<infer T>, unknown>
     ? T
@@ -121,4 +127,56 @@ export function wizForm<T extends ZodValidation<AnyZodObject>, M = any>(
         form: superForm(validated.form, options),
     };
 }
-// export function typedFormFieldProxy
+
+type DefaultOptions = {
+    trueStringValue: string;
+    format:
+        | "date"
+        | "datetime"
+        | "time"
+        | "date-utc"
+        | "datetime-utc"
+        | "time-utc"
+        | "date-local"
+        | "datetime-local"
+        | "time-local"
+        | "iso";
+    delimiter?: "." | ",";
+    empty: "null" | "undefined";
+    emptyIfZero?: boolean;
+};
+
+const defaultOptions: DefaultOptions = {
+    trueStringValue: "true",
+    format: "iso",
+    emptyIfZero: true,
+    empty: "null",
+};
+
+export function typedFormFieldProxy<
+    T extends ZodValidation<AnyZodObject>,
+    Path extends FormPathLeaves<z.infer<UnwrapEffects<T>>>
+>(
+    form: SuperForm<T>,
+    path: Path,
+    type: "number" | "int" | "boolean" | "date" | "string" = "string",
+    options: DefaultOptions = defaultOptions
+) {
+    const proxy = formFieldProxy(form, path);
+    switch (type) {
+        case "number":
+        case "int":
+            proxy.value = numberProxy(form.form, path, options);
+            break;
+        case "boolean":
+            proxy.value = booleanProxy(form.form, path, options);
+            break;
+        case "date":
+            proxy.value = dateProxy(form.form, path, options);
+            break;
+        default:
+            proxy.value = stringProxy(form.form, path, options);
+            break;
+    }
+    return proxy;
+}
