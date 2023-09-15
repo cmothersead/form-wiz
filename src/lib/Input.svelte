@@ -26,7 +26,7 @@
     export let labelClass = "";
     export let inputClass = "";
     const baseInputClasses = type === "checkbox" ? "checkbox" : "input";
-    const baseLabelClasses = type === "checkbox" ? "flex gap-2 items-center" : "label";
+    const baseLabelClasses = type === "checkbox" ? "flex gap-2 items-center h-full" : "label";
     $: inputClasses = `${baseInputClasses} ${inputClass}`.trim();
     $: labelClasses = `${baseLabelClasses} ${labelClass}`.trim();
 

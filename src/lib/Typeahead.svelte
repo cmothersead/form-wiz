@@ -324,7 +324,7 @@
 
   $: selectedLabel =
     filterText === ""
-      ? items.find((item) => item.value === value)?.label
+      ? items.find((item) => item.value == value)?.label ?? ""
       : filterText;
   $: if (inputAttributes || !searchable) assignInputAttributes();
   $: if (value) dispatchSelectedItem();
@@ -351,7 +351,7 @@
 
 <div class="relative" bind:this={container}>
   <div
-    class="input rounded-md flex items-stretch px-3 py-1 h-11 cursor-pointer {inputClass}"
+    class="input flex items-stretch px-3 cursor-pointer {inputClass}"
     class:cursor-text={searchable}
     on:pointerup|preventDefault={handleClick}
     on:mousedown|preventDefault
