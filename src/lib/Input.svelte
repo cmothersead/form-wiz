@@ -25,8 +25,8 @@
 
     export let labelClass = "";
     export let inputClass = "";
-    const baseInputClasses = "input rounded-md";
-    const baseLabelClasses = "label";
+    const baseInputClasses = type === "checkbox" ? "checkbox" : "input";
+    const baseLabelClasses = type === "checkbox" ? "flex gap-2 items-center" : "label";
     $: inputClasses = `${baseInputClasses} ${inputClass}`.trim();
     $: labelClasses = `${baseLabelClasses} ${labelClass}`.trim();
 
@@ -36,9 +36,6 @@
 <label
     for={id}
     class={labelClasses}
-    class:flex={type === "checkbox"}
-    class:flex-row-reverse={type === "checkbox"}
-    class:items-center={type === "checkbox"}
     style="grid-column-start: span {colSpan}"
     {hidden}
 >
