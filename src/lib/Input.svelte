@@ -19,7 +19,9 @@
     export let max = "";
     export let hidden = false;
 
-    export let value: string | number | Date;
+    export let value: string | number | Date | boolean;
+    let checked = false;
+    $: if (type === "checkbox") value = checked;
 
     export let labelClass = "";
     export let inputClass = "";
@@ -34,6 +36,9 @@
 <label
     for={id}
     class={labelClasses}
+    class:flex={type === "checkbox"}
+    class:flex-row-reverse={type === "checkbox"}
+    class:items-center={type === "checkbox"}
     style="grid-column-start: span {colSpan}"
     {hidden}
 >
@@ -204,6 +209,30 @@
             {items}
             {searchable}
             inputClass={inputClasses}
+        />
+    {:else if type == "select"}
+        <select
+            {id}
+            {...$$restProps}
+            {name}
+            class={inputClasses}
+            bind:value
+            {disabled}
+        >
+            {#each items as { value, label }}
+                <option {value}>{label}</option>
+            {/each}
+            <slot />
+        </select>
+    {:else if type == "checkbox"}
+        <input
+            {id}
+            {...$$restProps}
+            {name}
+            class={inputClasses}
+            type="checkbox"
+            bind:checked
+            {disabled}
         />
     {/if}
     {#if $errors && $errors.length > 0}

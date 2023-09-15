@@ -4,6 +4,7 @@
     import SuperDebug from "sveltekit-superforms/client/SuperDebug.svelte";
     export let data;
     const form = wizForm(data.form, { taintedMessage: null });
+    const dataF = form.form.form;
 </script>
 
 <h1>Welcome to your library project</h1>
@@ -16,3 +17,4 @@
 </p>
 <SuperDebug data={form.form.form} />
 <Form {form} />
+<input type="checkbox" bind:checked={$dataF.bool} />

@@ -9,18 +9,14 @@ import {
     type SuperForm,
     superForm,
     type FormOptions,
-    stringProxy,
-    intProxy,
-    booleanProxy,
-    numberProxy,
     dateProxy,
-    fieldProxy,
     formFieldProxy,
 } from "sveltekit-superforms/client";
 import type { SuperValidateOptions } from "sveltekit-superforms/server";
 import type { AnyZodObject, z } from "zod";
 
 export const InputType = {
+    checkbox: "checkbox",
     color: "color",
     date: "date",
     "datetime-local": "datetime-local",
@@ -31,6 +27,7 @@ export const InputType = {
     password: "password",
     range: "range",
     search: "search",
+    select: "select",
     tel: "tel",
     text: "text",
     time: "time",
@@ -103,6 +100,9 @@ export async function wizValidate<T extends ZodValidation<any>>(
                     case "date":
                         layout.fields[name] = { type: "date" };
                         break;
+                    case "boolean":
+                        layout.fields[name] = { type: "checkbox" };
+                        break;
                     default:
                         layout.fields[name] = {};
                         break;
@@ -148,7 +148,7 @@ type DefaultOptions = {
 
 const defaultOptions: DefaultOptions = {
     trueStringValue: "true",
-    format: "iso",
+    format: "datetime-local",
     emptyIfZero: true,
     empty: "null",
 };
@@ -163,20 +163,8 @@ export function typedFormFieldProxy<
     options: DefaultOptions = defaultOptions
 ) {
     const proxy = formFieldProxy(form, path);
-    switch (type) {
-        case "number":
-        case "int":
-            proxy.value = numberProxy(form.form, path, options);
-            break;
-        case "boolean":
-            proxy.value = booleanProxy(form.form, path, options);
-            break;
-        case "date":
-            proxy.value = dateProxy(form.form, path, options);
-            break;
-        default:
-            proxy.value = stringProxy(form.form, path, options);
-            break;
+    if (type === "date") {
+        proxy.value = dateProxy(form.form, path, options);
     }
     return proxy;
 }

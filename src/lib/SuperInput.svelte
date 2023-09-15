@@ -43,7 +43,9 @@
         ? "date"
         : numberTypes.includes(type)
         ? "number"
-        : type === InputType.typeahead
+        : type === "checkbox"
+        ? "boolean"
+        : type === "typeahead"
         ? indexType
         : "string";
 
