@@ -94,10 +94,8 @@ export async function wizValidate<T extends ZodValidation<any>>(
     ): Layout<typeof schema> {
         return Object.entries(schema._def.shape()).reduce(
             (layout, [name, value]) => {
-                console.log({ name, value });
                 while (value._def.innerType) {
-                    console.log(value._def.innerType);
-                    value._def = value._def.innerType._def;
+                    value = value._def.innerType;
                 }
                 switch (value._def.typeName.toLowerCase().replace("zod", "")) {
                     case "number":
@@ -120,7 +118,6 @@ export async function wizValidate<T extends ZodValidation<any>>(
     }
     const form = await superValidate(data, schema, options);
     const layoutOptions: Layout<typeof form> = getLayoutOptions(schema);
-    console.log(layoutOptions);
 
     return { form, layoutOptions };
 }
