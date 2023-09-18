@@ -106,8 +106,8 @@
     switch (e.key) {
       case "Escape":
         e.preventDefault();
-        if (focused && !listOpen) {
-          value = "";
+        if (focused && !listOpen && value !== '') {
+          handleClear();
         }
         closeList();
         break;
@@ -163,6 +163,7 @@
         break;
       case "Backspace":
         if (filterText.length > 0) return;
+        if (value !== "") handleClear();
         break;
     }
   }
@@ -194,6 +195,7 @@
 
   function handleClear() {
     dispatch("clear", value);
+    dispatch("change", value);
     value = "";
     closeList();
     handleFocus();
