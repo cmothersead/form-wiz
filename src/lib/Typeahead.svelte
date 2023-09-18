@@ -375,7 +375,7 @@
 
     <div class="flex items-center overflow-hidden w-full">
       {#if hasValue}
-        <div class="absolute whitespace-nowrap overflow-hidden w-2/3">
+        <div class="absolute whitespace-nowrap overflow-hidden w-10/12">
           <slot name="selection" selection={value}>
             {selectedLabel}
           </slot>
@@ -383,7 +383,7 @@
       {/if}
 
       <input
-        class="bg-transparent border-0 ps-0 flex-grow"
+        class="input !bg-transparent border-0 ps-0 flex-grow"
         class:cursor-pointer={!searchable}
         on:keydown={handleKeyDown}
         on:focus={handleFocus}
@@ -444,7 +444,7 @@
               !isItemActive(item, value)}
           >
             <slot name="item" {item} index={i}>
-              {item?.label}
+              {item?.label} - {item?.detail}
             </slot>
           </div>
         {/each}
