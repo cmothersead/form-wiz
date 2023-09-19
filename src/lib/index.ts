@@ -36,7 +36,7 @@ export const InputType = {
     url: "url",
 } as const;
 
-export type Item = { value: any; label: string, detail: string };
+export type Item = { value: any; label: string; detail?: string };
 export type FieldConfig = {
     type?: keyof typeof InputType;
     label?: string;
