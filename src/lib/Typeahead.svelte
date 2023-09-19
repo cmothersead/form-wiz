@@ -106,7 +106,7 @@
     switch (e.key) {
       case "Escape":
         e.preventDefault();
-        if (focused && !listOpen && value !== '') {
+        if (focused && !listOpen && value !== "") {
           handleClear();
         }
         closeList();
@@ -195,8 +195,8 @@
 
   function handleClear() {
     dispatch("clear", value);
-    dispatch("change", value);
     value = "";
+    dispatch("change", value);
     closeList();
     handleFocus();
   }
