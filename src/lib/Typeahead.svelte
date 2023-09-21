@@ -148,7 +148,7 @@
 
                 break;
             case "Tab":
-                if (listOpen && focused) {
+                if (listOpen) {
                     if (
                         filteredItems.length === 0 ||
                         (!!value &&
@@ -159,8 +159,9 @@
                     e.preventDefault();
                     handleSelect(filteredItems[hoverItemIndex]);
                     closeList();
+                } else {
+                    handleBlur();
                 }
-
                 break;
             case "Backspace":
                 if (filterText.length > 0) return;
@@ -258,12 +259,7 @@
     }
 
     function handleClickOutside(event: MouseEvent) {
-        if (
-            focused &&
-            container &&
-            list &&
-            !container.contains(event.target as Node)
-        ) {
+        if (focused && container && !container.contains(event.target as Node)) {
             handleBlur();
         }
     }
