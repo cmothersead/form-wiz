@@ -316,7 +316,7 @@
         strategy: "absolute",
         placement: "bottom-start",
         middleware: [offset(5), size(), flip(), shift()],
-        autoUpdate: false,
+        autoUpdate: true,
     };
 
     const [floatingRef, floatingContent] =
@@ -325,7 +325,7 @@
     $: selectedLabel =
         filterText === ""
             ? items.find((item) => item.value == value)?.label ?? ""
-            : filterText;
+            : "";
     $: if (inputAttributes || !searchable) assignInputAttributes();
     $: if (value) dispatchSelectedItem();
     $: if (!focused && input) closeList();
@@ -338,8 +338,7 @@
     $: ariaContext = handleAriaContent();
     $: if (prev_value && !value) dispatch("input", value);
     $: searcher = new Searcher(items, { keySelector: (item) => item.label });
-    $: filteredItems =
-        filterText == "" ? items : searcher.search(filterText).slice(0, 10);
+    $: filteredItems = filterText == "" ? items : searcher.search(filterText);
     $: handleFilterEvent(filteredItems);
     $: scrollToHoverItem = hoverItemIndex;
     $: if (input && listOpen && !focused) handleFocus();
