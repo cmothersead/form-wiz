@@ -1,3 +1,5 @@
+import _ from "lodash";
+const { merge } = _;
 import type {
     FormPathLeaves,
     SuperValidated,
@@ -74,24 +76,18 @@ export { default as SuperInput } from "./SuperInput.svelte";
 export { default as Typeahead } from "./Typeahead.svelte";
 export { default as LabeledIcon } from "./LabeledIcon.svelte";
 
-export async function wizValidate<T extends ZodValidation<any>>(
-    data: unknown,
-    schema?: T | SuperValidateOptions,
+export async function wizCreate<T extends ZodValidation<AnyZodObject>>(
+    schema: T,
+    action: string,
+    layout?: Layout<SuperValidated<T>>,
     options?: SuperValidateOptions
 ) {
-    if (data && typeof data === "object" && "safeParseAsync" in data) {
-        options = schema as SuperValidateOptions | undefined;
-        schema = data as T;
-        data = null;
-    }
-    const defaultLayout = {
-        columns: 1,
-        fields: {},
-    };
+    function getLayoutOptions(schema: T): Layout<SuperValidated<T>> {
+        const defaultLayout = {
+            columns: 1,
+            fields: {},
+        };
 
-    function getLayoutOptions(
-        schema: ZodValidation<any>
-    ): Layout<typeof schema> {
         return Object.entries(schema._def.shape()).reduce(
             (layout, [name, value]) => {
                 while (value._def.innerType) {
@@ -116,17 +112,25 @@ export async function wizValidate<T extends ZodValidation<any>>(
             Object.assign({}, defaultLayout)
         );
     }
-    const form = await superValidate(data, schema, options);
-    const layoutOptions: Layout<typeof form> = getLayoutOptions(schema);
+    const form = await superValidate(schema, options);
+    const layoutOptions: Layout<SuperValidated<T>> = merge(
+        getLayoutOptions(schema),
+        layout
+    );
 
-    return { form, layoutOptions };
+    return { form, action, layoutOptions };
 }
 
 export function wizForm<T extends ZodValidation<AnyZodObject>, M = any>(
-    validated: { form: SuperValidated<T, M>; layoutOptions: Layout<T> },
+    validated: {
+        form: SuperValidated<T, M>;
+        layoutOptions: Layout<T>;
+        action: string;
+    },
     options: FormOptions<UnwrapEffects<T>, M> = {}
 ) {
     return {
+        action: validated.action,
         layoutOptions: validated.layoutOptions,
         form: superForm(validated.form, options),
     };

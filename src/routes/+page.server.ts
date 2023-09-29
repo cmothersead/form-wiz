@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { wizValidate } from "$lib/index.js";
+import { wizCreate } from "$lib/index.js";
 
 export async function load() {
     const schema = z
@@ -12,6 +12,6 @@ export async function load() {
         })
         .omit({ omitted: true });
 
-    const form = await wizValidate(schema);
+    const form = await wizCreate(schema);
     return { form };
 }
