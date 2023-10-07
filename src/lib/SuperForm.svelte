@@ -35,40 +35,28 @@
 
 <form {id} {action} class="container mx-auto p-4" method="POST" use:enhance>
     <div class="flex flex-col gap-4">
-        <div
-            class="grid gap-2"
-            style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
-        >
-            {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden }]}
-                <SuperInput
-                    {form}
-                    {field}
-                    {type}
-                    {label}
-                    {colSpan}
-                    {items}
-                    {searchable}
-                    {indexType}
-                    {hidden}
-                />
-            {/each}
-        </div>
-        <div class="flex">
-            {#if final.buttons !== false}
-                {#if final.buttons}
-                    {#each final.buttons as { icon, text, classes, type }}
-                        <button class="btn variant-filled {classes}" {type}>
-                            {#if icon}
-                                <LabeledIcon {icon}>{text}</LabeledIcon>
-                            {:else}
-                                {text}
-                            {/if}
-                        </button>
-                    {/each}
-                {:else}
-                    <button class="btn variant-filled">Submit</button>
-                {/if}
-            {/if}
-        </div>
+        <slot name="fields">
+            <div
+                class="grid gap-2"
+                style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
+            >
+                {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden }]}
+                    <SuperInput
+                        {form}
+                        {field}
+                        {type}
+                        {label}
+                        {colSpan}
+                        {items}
+                        {searchable}
+                        {indexType}
+                        {hidden}
+                    />
+                {/each}
+            </div>
+        </slot>
+        <slot name="buttons">
+            <button class="btn variant-filled">Submit</button>
+        </slot>
     </div>
 </form>

@@ -66,14 +66,6 @@ export type Layout<
     fields?: {
         [key in FormPathLeaves<z.infer<Schema<F>>>]?: FieldConfig;
     };
-    buttons?:
-        | {
-              icon?: string;
-              text: string;
-              classes?: string;
-              type?: "button" | "reset" | "submit";
-          }[]
-        | false;
 };
 
 export { default as Form } from "./SuperForm.svelte";
