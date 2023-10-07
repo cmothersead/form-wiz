@@ -29,7 +29,9 @@
 
     let fields: [string, FieldConfig][];
     $: if (final.fields != undefined) {
-        fields = Object.entries(final.fields);
+        fields = Object.entries(final.fields).filter(
+            ([, field]) => field != false
+        ) as [string, FieldConfig][];
     }
 </script>
 

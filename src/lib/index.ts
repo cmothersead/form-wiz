@@ -64,7 +64,7 @@ export type Layout<
 > = {
     columns?: number;
     fields?: {
-        [key in FormPathLeaves<z.infer<Schema<F>>>]?: FieldConfig;
+        [key in FormPathLeaves<z.infer<Schema<F>>>]?: FieldConfig | false;
     };
 };
 
