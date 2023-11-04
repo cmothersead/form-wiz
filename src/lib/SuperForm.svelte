@@ -42,7 +42,7 @@
                 class="grid gap-2"
                 style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
             >
-                {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden }]}
+                {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden, min, max }]}
                     <SuperInput
                         {form}
                         {field}
@@ -53,6 +53,8 @@
                         {searchable}
                         {indexType}
                         {hidden}
+                        {min}
+                        {max}
                     />
                 {/each}
             </div>

@@ -47,6 +47,8 @@ export type FieldConfig = {
     searchable?: boolean;
     indexType?: "string" | "number";
     hidden?: boolean;
+    min?: number | Date;
+    max?: number | Date;
 };
 export type Schema<F> = F extends ZodValidation<infer T>
     ? T
