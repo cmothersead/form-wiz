@@ -1,12 +1,10 @@
 import _ from "lodash";
 const { merge } = _;
-import type {
-    FormPathLeaves,
-    SuperValidated,
-    UnwrapEffects,
-    ZodValidation,
-} from "sveltekit-superforms";
 import {
+    type FormPathLeaves,
+    type SuperValidated,
+    type UnwrapEffects,
+    type ZodValidation,
     superValidate,
     type SuperForm,
     superForm,
@@ -14,8 +12,9 @@ import {
     dateProxy,
     formFieldProxy,
     numberProxy,
-} from "sveltekit-superforms/client";
-import type { SuperValidateOptions } from "sveltekit-superforms/server";
+    type SuperValidateOptions,
+} from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
 import type { AnyZodObject, z } from "zod";
 
 export const InputType = {
@@ -112,26 +111,26 @@ export async function wizCreate<T extends ZodValidation<AnyZodObject>>(
             Object.assign({}, defaultLayout)
         );
     }
-    const form = await superValidate(schema, options);
+    const form = await superValidate(zod(schema));
     const layoutOptions: Layout<SuperValidated<T>> = merge(
         getLayoutOptions(schema),
         layout
     );
 
-    return { form, action, layoutOptions };
+    return { form, action, layout: layoutOptions };
 }
 
 export function wizForm<T extends ZodValidation<AnyZodObject>, M = any>(
     validated: {
         form: SuperValidated<T, M>;
-        layoutOptions: Layout<T>;
+        layout: Layout<T>;
         action: string;
     },
     options: FormOptions<UnwrapEffects<T>, M> = {}
 ) {
     return {
         action: validated.action,
-        layoutOptions: validated.layoutOptions,
+        layout: validated.layout,
         form: superForm(validated.form, options),
     };
 }

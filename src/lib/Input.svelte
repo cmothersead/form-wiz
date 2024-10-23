@@ -3,35 +3,59 @@
     import type { InputType, Item } from "$lib";
     import { Typeahead } from "$lib";
 
-    export let id: string;
-    export let name = "";
-    export let autocomplete = "off";
-    export let disabled = false;
-    export let errors: Writable<string[] | undefined> = writable([]);
-    export let files = undefined;
-    export let label = "";
-    export let multiple = false;
-    export let placeholder = "";
-    export let type: keyof typeof InputType;
-    export let items: Item[] = [];
-    export let searchable = false;
-    export let min = "";
-    export let max = "";
-    export let hidden = false;
+    let {
+        id,
+        name = "",
+        autocomplete = "off",
+        disabled = false,
+        errors = writable([]),
+        files = undefined,
+        label = "",
+        multiple = false,
+        placeholder = "",
+        type,
+        items = [],
+        searchable = false,
+        min = "",
+        max = "",
+        hidden = false,
+        value = $bindable(),
+        labelClass = "",
+        inputClass = "",
+        colSpan = 1,
+        ...rest
+    }: {
+        id: string;
+        name: string;
+        autocomplete: AutoFill | null | undefined;
+        disabled: boolean;
+        errors: Writable<string[] | undefined>;
+        files: FileList | null | undefined;
+        label: string;
+        multiple: boolean;
+        placeholder: string;
+        type: keyof typeof InputType;
+        items: Item[];
+        searchable: boolean;
+        min: string;
+        max: string;
+        hidden: boolean;
+        value: string | number | Date | boolean;
+        labelClass: string;
+        inputClass: string;
+        colSpan: number;
+    } = $props();
 
-    export let value: string | number | Date | boolean;
-    let checked = type === "checkbox" && value === true ? true : false;
-    $: if (type === "checkbox") value = checked;
+    let checked = $state(type === "checkbox" && value === true ? true : false);
+    $effect(() => {
+        if (type === "checkbox") value = checked;
+    });
 
-    export let labelClass = "";
-    export let inputClass = "";
     const baseInputClasses = type === "checkbox" ? "checkbox" : "input";
     const baseLabelClasses =
         type === "checkbox" ? "flex gap-2 items-center h-full" : "label";
-    $: inputClasses = `${baseInputClasses} ${inputClass}`.trim();
-    $: labelClasses = `${baseLabelClasses} ${labelClass}`.trim();
-
-    export let colSpan = 1;
+    let inputClasses = $derived(`${baseInputClasses} ${inputClass}`.trim());
+    let labelClasses = $derived(`${baseLabelClasses} ${labelClass}`.trim());
 </script>
 
 <label
@@ -43,8 +67,8 @@
     <span>{label}</span>
     {#if type === "text"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="text"
             bind:value
@@ -55,8 +79,8 @@
         />
     {:else if type === "password"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="password"
             bind:value
@@ -66,8 +90,8 @@
         />
     {:else if type === "color"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="color"
             bind:value
@@ -77,8 +101,8 @@
         />
     {:else if type === "email"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="email"
             bind:value
@@ -90,8 +114,8 @@
         />
     {:else if type === "file"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="file"
             bind:files
@@ -103,8 +127,8 @@
         />
     {:else if type === "url"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="url"
             bind:value
@@ -114,8 +138,8 @@
         />
     {:else if type === "number"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="number"
             bind:value
@@ -127,15 +151,15 @@
         />
     {:else if type === "date"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="date"
             value={value
                 ? new Date(value).toISOString().split("T")[0]
                 : undefined}
-            on:blur={(e) => (value = e.currentTarget.value)}
-            on:input={(e) => {
+            onblur={(e) => (value = e.currentTarget.value)}
+            oninput={(e) => {
                 const val = e.currentTarget.value;
                 if (/^[1-9]\d{3}-\d\d-\d\d$/.test(val)) value = val;
             }}
@@ -145,8 +169,8 @@
         />
     {:else if type === "datetime-local"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="datetime-local"
             bind:value
@@ -158,8 +182,8 @@
         />
     {:else if type === "month"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="month"
             bind:value
@@ -169,8 +193,8 @@
         />
     {:else if type === "range"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             type="range"
             bind:value
             class={inputClasses}
@@ -180,8 +204,8 @@
         />
     {:else if type === "search"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="search"
             bind:value
@@ -192,8 +216,8 @@
         />
     {:else if type === "tel"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             class={inputClasses}
             type="tel"
             bind:value
@@ -212,8 +236,8 @@
         />
     {:else if type == "select"}
         <select
+            {...rest}
             {id}
-            {...$$restProps}
             {name}
             class={inputClasses}
             bind:value
@@ -222,12 +246,11 @@
             {#each items as { value, label }}
                 <option {value}>{label}</option>
             {/each}
-            <slot />
         </select>
     {:else if type == "checkbox"}
         <input
+            {...rest}
             {id}
-            {...$$restProps}
             {name}
             class={inputClasses}
             type="checkbox"
@@ -236,6 +259,6 @@
         />
     {/if}
     {#if $errors && $errors.length > 0}
-        <small class="text-error-500">{$errors}</small>
+        <small class="text-error-500">{errors}</small>
     {/if}
 </label>

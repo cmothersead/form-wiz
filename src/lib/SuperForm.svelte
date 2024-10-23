@@ -4,63 +4,63 @@
     import type { AnyZodObject } from "zod";
     import { LabeledIcon, SuperInput } from "$lib";
     import type { FieldConfig, Layout } from "./index.js";
-    import { merge } from "lodash";
+    import _ from "lodash";
+
+    const { merge } = _;
 
     type Form = SuperForm<ZodValidation<T>, unknown>;
 
-    export let id: string | undefined = undefined;
-    let formWithLayout: {
-        form: Form;
-        layoutOptions: Layout<Form>;
-        action: string;
-    };
-    export { formWithLayout as form };
-    const {
-        form,
-        layoutOptions: defaultLayout,
-        action: defaultAction,
-    } = formWithLayout;
-    const { enhance } = form;
-    export let layout: Layout<Form> | undefined = undefined;
-    export let action = defaultAction;
-    let final: Layout<Form>;
-    $: final =
-        layout != undefined ? merge(defaultLayout, layout) : defaultLayout;
+    let {
+        id = undefined,
+        form: formWithLayout,
+        layout = formWithLayout.layout,
+        action = formWithLayout.action,
+    }: {
+        id?: string | undefined;
+        form: { form: Form; layout: Layout<Form>; action: string };
+        layout?: Layout<Form> | undefined;
+        action?: string;
+    } = $props();
 
-    let fields: [string, FieldConfig][];
-    $: if (final.fields != undefined) {
-        fields = Object.entries(final.fields).filter(
-            ([, field]) => field != false
-        ) as [string, FieldConfig][];
-    }
+    const { form } = formWithLayout;
+    const { enhance } = form;
+
+    // let final: Layout<Form> = $derived(
+    //     layout != undefined ? merge(defaultLayout, layout) : defaultLayout
+    // );
+
+    let fields: [string, FieldConfig][] = $state([]);
+    $effect(() => {
+        if (layout.fields != undefined) {
+            fields = Object.entries(layout.fields).filter(
+                ([, field]) => field != false
+            ) as [string, FieldConfig][];
+        }
+    });
 </script>
 
 <form {id} {action} class="container mx-auto p-4" method="POST" use:enhance>
     <div class="flex flex-col gap-4">
-        <slot name="fields">
-            <div
-                class="grid gap-2"
-                style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
-            >
-                {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden, min, max }]}
-                    <SuperInput
-                        {form}
-                        {field}
-                        {type}
-                        {label}
-                        {colSpan}
-                        {items}
-                        {searchable}
-                        {indexType}
-                        {hidden}
-                        {min}
-                        {max}
-                    />
-                {/each}
-            </div>
-        </slot>
-        <slot name="buttons">
-            <button class="btn variant-filled">Submit</button>
-        </slot>
+        <div
+            class="grid gap-2"
+            style="grid-template-columns: repeat({layout.columns}, minmax(0, 1fr))"
+        >
+            {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden, min, max }]}
+                <SuperInput
+                    {form}
+                    {field}
+                    {type}
+                    {label}
+                    {colSpan}
+                    {items}
+                    {searchable}
+                    {indexType}
+                    {hidden}
+                    {min}
+                    {max}
+                />
+            {/each}
+        </div>
+        <button class="btn variant-filled">Submit</button>
     </div>
 </form>

@@ -1,34 +1,62 @@
 <script lang="ts">
     import { typedFormFieldProxy } from "./index.js";
 
-    import type { FormPathLeaves, ZodValidation } from "sveltekit-superforms";
+    import type {
+        FormPathLeaves,
+        ZodValidation,
+        SuperForm,
+    } from "sveltekit-superforms";
     import type { z, AnyZodObject } from "zod";
 
     import { Input, type Item, InputType } from "./index.js";
-    import type { SuperForm } from "sveltekit-superforms/client";
-    import { startCase } from "lodash";
+    import _ from "lodash";
+    const { startCase } = _;
 
     type T = $$Generic<AnyZodObject>;
 
-    export let form: SuperForm<ZodValidation<T>, unknown>;
-    export let field: FormPathLeaves<z.infer<T>>;
-
-    export let id = String(field);
-    export let autocomplete = "off";
-    export let disabled = false;
-    export let files = undefined;
-    export let label = startCase(String(field));
-    export let multiple = false;
-    export let name = String(field);
-    export let placeholder = "";
-    export let type: keyof typeof InputType = "text";
-    export let colSpan = 1;
-    export let items: Item[] = [];
-    export let searchable = false;
-    export let indexType: "string" | "number" = "string";
-    export let min = "";
-    export let max = "";
-    export let hidden = false;
+    let {
+        form,
+        field,
+        id = String(field),
+        autocomplete = "off",
+        disabled = false,
+        files = undefined,
+        label = startCase(String(field)),
+        multiple = false,
+        name = String(field),
+        placeholder = "",
+        type = "text",
+        colSpan = 1,
+        items = [],
+        searchable = false,
+        indexType = "string",
+        min = "",
+        max = "",
+        hidden = false,
+        labelClass = "",
+        inputClass = "",
+    }: {
+        form: SuperForm<ZodValidation<T>, unknown>;
+        field: FormPathLeaves<z.infer<T>>;
+        id: string;
+        autocomplete: AutoFill | null | undefined;
+        disabled: boolean;
+        files: FileList | null | undefined;
+        label: string;
+        multiple: boolean;
+        name: string;
+        placeholder: string;
+        type: keyof typeof InputType;
+        colSpan: number;
+        items: Item[];
+        searchable: boolean;
+        indexType: "string" | "number";
+        min: string;
+        max: string;
+        hidden: boolean;
+        labelClass: string;
+        inputClass: string;
+    } = $props();
 
     const dateTypes = [
         "date",
@@ -42,21 +70,19 @@
     const superType = dateTypes.includes(type)
         ? "date"
         : numberTypes.includes(type)
-        ? "number"
-        : type === "checkbox"
-        ? "boolean"
-        : type === "typeahead"
-        ? indexType
-        : "string";
+          ? "number"
+          : type === "checkbox"
+            ? "boolean"
+            : type === "typeahead"
+              ? indexType
+              : "string";
 
     const { value, errors } = typedFormFieldProxy(form, field, superType);
 
-    export let labelClass = "";
-    export let inputClass = "";
     const baseInputClasses = "";
     const baseLabelClasses = "";
-    $: labelClasses = `${baseLabelClasses} ${labelClass}`;
-    $: inputClasses = `${baseInputClasses} ${inputClass}`;
+    let labelClasses = $derived(`${baseLabelClasses} ${labelClass}`);
+    let inputClasses = $derived(`${baseInputClasses} ${inputClass}`);
 </script>
 
 <Input
@@ -80,4 +106,4 @@
     {max}
     {hidden}
 />
-<div class="bg-red-400" hidden />
+<div class="bg-red-400" hidden></div>
