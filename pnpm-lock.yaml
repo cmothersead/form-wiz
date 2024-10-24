@@ -23,9 +23,6 @@ importers:
       sveltekit-superforms:
         specifier: ^2.20.0
         version: 2.20.0(@sveltejs/kit@2.7.2(@sveltejs/vite-plugin-svelte@4.0.0(svelte@5.0.5)(vite@5.4.10))(svelte@5.0.5)(vite@5.4.10))(@types/json-schema@7.0.15)(svelte@5.0.5)(typescript@5.2.2)
-      vite:
-        specifier: ^5.4.10
-        version: 5.4.10
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -60,6 +57,9 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.2.2
+      vite:
+        specifier: ^5.4.10
+        version: 5.4.10
 
 packages:
 

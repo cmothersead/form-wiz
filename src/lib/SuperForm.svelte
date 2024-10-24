@@ -25,14 +25,16 @@
     const { form } = formWithLayout;
     const { enhance } = form;
 
-    // let final: Layout<Form> = $derived(
-    //     layout != undefined ? merge(defaultLayout, layout) : defaultLayout
-    // );
+    let final: Layout<Form> = $derived(
+        layout != undefined
+            ? merge(formWithLayout.layout, layout)
+            : formWithLayout.layout
+    );
 
     let fields: [string, FieldConfig][] = $state([]);
     $effect(() => {
-        if (layout.fields != undefined) {
-            fields = Object.entries(layout.fields).filter(
+        if (final.fields != undefined) {
+            fields = Object.entries(final.fields).filter(
                 ([, field]) => field != false
             ) as [string, FieldConfig][];
         }
@@ -43,7 +45,7 @@
     <div class="flex flex-col gap-4">
         <div
             class="grid gap-2"
-            style="grid-template-columns: repeat({layout.columns}, minmax(0, 1fr))"
+            style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
         >
             {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden, min, max }]}
                 <SuperInput
