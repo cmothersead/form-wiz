@@ -14,6 +14,12 @@ const schema = z
     .omit({ omitted: true });
 
 export async function load() {
-    const form = await wizCreate(schema, "?/update");
+    const properForm = await superValidate(zod(schema));
+    const form = await wizCreate(schema, "?/update", {
+        columns: 2,
+        fields: {
+            test: { colSpan: 2 },
+        },
+    });
     return { form };
 }

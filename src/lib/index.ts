@@ -3,16 +3,14 @@ const { merge } = _;
 import {
     type FormPathLeaves,
     type SuperValidated,
-    type UnwrapEffects,
-    type ZodValidation,
     superValidate,
+    type SuperValidateOptions,
     type SuperForm,
     superForm,
     type FormOptions,
     dateProxy,
     formFieldProxy,
     numberProxy,
-    type SuperValidateOptions,
 } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import type { AnyZodObject, z } from "zod";
@@ -49,24 +47,13 @@ export type FieldConfig = {
     min?: number | Date;
     max?: number | Date;
 };
-export type Schema<F> = F extends ZodValidation<infer T>
-    ? T
-    : F extends SuperForm<ZodValidation<infer T>, unknown>
-    ? T
-    : F extends SuperValidated<infer T, unknown>
-    ? T
-    : never;
-export type Layout<
-    F extends
-        | ZodValidation<T>
-        | SuperForm<ZodValidation<T>, unknown>
-        | SuperValidated<T, unknown>,
-    T extends AnyZodObject = Schema<F>
-> = {
+export type PartialLayout<T extends Record<string, unknown>> = {
     columns?: number;
-    fields?: {
-        [key in FormPathLeaves<z.infer<Schema<F>>>]?: FieldConfig | false;
-    };
+    fields?: { [key in keyof T]?: FieldConfig | false };
+};
+export type Layout<T extends Record<string, unknown>> = {
+    columns: number;
+    fields: Record<keyof T, FieldConfig | false>;
 };
 
 export { default as Form } from "./SuperForm.svelte";
@@ -75,13 +62,13 @@ export { default as SuperInput } from "./SuperInput.svelte";
 export { default as Typeahead } from "./Typeahead.svelte";
 export { default as LabeledIcon } from "./LabeledIcon.svelte";
 
-export async function wizCreate<T extends ZodValidation<AnyZodObject>>(
+export async function wizCreate<T extends AnyZodObject>(
     schema: T,
     action: string,
-    layout?: Layout<SuperValidated<T>>,
+    layout?: PartialLayout<z.infer<T>>,
     options?: SuperValidateOptions
 ) {
-    function getLayoutOptions(schema: T): Layout<SuperValidated<T>> {
+    function getLayoutOptions(schema: T): Layout<z.infer<T>> {
         const defaultLayout = {
             columns: 1,
             fields: {},
@@ -112,7 +99,7 @@ export async function wizCreate<T extends ZodValidation<AnyZodObject>>(
         );
     }
     const form = await superValidate(zod(schema));
-    const layoutOptions: Layout<SuperValidated<T>> = merge(
+    const layoutOptions: Layout<z.infer<T>> = merge(
         getLayoutOptions(schema),
         layout
     );
@@ -120,13 +107,13 @@ export async function wizCreate<T extends ZodValidation<AnyZodObject>>(
     return { form, action, layout: layoutOptions };
 }
 
-export function wizForm<T extends ZodValidation<AnyZodObject>, M = any>(
+export function wizForm<T extends AnyZodObject, M = any>(
     validated: {
-        form: SuperValidated<T, M>;
-        layout: Layout<T>;
+        form: SuperValidated<z.infer<T>, M>;
+        layout: Layout<z.infer<T>>;
         action: string;
     },
-    options: FormOptions<UnwrapEffects<T>, M> = {}
+    options: FormOptions<z.infer<T>, M> = {}
 ) {
     return {
         action: validated.action,
@@ -161,10 +148,10 @@ const defaultOptions: DefaultOptions = {
 };
 
 export function typedFormFieldProxy<
-    T extends ZodValidation<AnyZodObject>,
-    Path extends FormPathLeaves<z.infer<UnwrapEffects<T>>>
+    T extends AnyZodObject,
+    Path extends FormPathLeaves<z.infer<T>>
 >(
-    form: SuperForm<T>,
+    form: SuperForm<z.infer<T>>,
     path: Path,
     type: "number" | "int" | "boolean" | "date" | "string" = "string",
     options: DefaultOptions = defaultOptions

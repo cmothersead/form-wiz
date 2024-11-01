@@ -1,14 +1,12 @@
 <script lang="ts">
-    import { typedFormFieldProxy } from "./index.js";
-
-    import type {
-        FormPathLeaves,
-        ZodValidation,
-        SuperForm,
-    } from "sveltekit-superforms";
+    import type { FormPathLeaves, SuperForm } from "sveltekit-superforms";
     import type { z, AnyZodObject } from "zod";
-
-    import { Input, type Item, InputType } from "./index.js";
+    import {
+        typedFormFieldProxy,
+        Input,
+        type Item,
+        InputType,
+    } from "./index.js";
     import _ from "lodash";
     const { startCase } = _;
 
@@ -36,7 +34,7 @@
         labelClass = "",
         inputClass = "",
     }: {
-        form: SuperForm<ZodValidation<T>, unknown>;
+        form: SuperForm<z.infer<T>, unknown>;
         field: FormPathLeaves<z.infer<T>>;
         id: string;
         autocomplete: AutoFill | null | undefined;

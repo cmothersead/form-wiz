@@ -1,14 +1,13 @@
 <script lang="ts" generics="T extends AnyZodObject">
-    import type { ZodValidation } from "sveltekit-superforms";
-    import type { SuperForm } from "sveltekit-superforms/client";
-    import type { AnyZodObject } from "zod";
+    import type { SuperForm } from "sveltekit-superforms";
+    import type { z, AnyZodObject } from "zod";
     import { LabeledIcon, SuperInput } from "$lib";
     import type { FieldConfig, Layout } from "./index.js";
     import _ from "lodash";
 
     const { merge } = _;
 
-    type Form = SuperForm<ZodValidation<T>, unknown>;
+    type Form = SuperForm<z.infer<T>, unknown>;
 
     let {
         id = undefined,

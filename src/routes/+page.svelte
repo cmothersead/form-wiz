@@ -3,6 +3,7 @@
     import SuperDebug from "sveltekit-superforms";
     import SuperForm from "$lib/SuperForm.svelte";
     let { data } = $props();
+    let { layout } = $derived(data.form);
     const wizform = wizForm(data.form);
     const superform = wizform.form;
     const form = superform.form;
