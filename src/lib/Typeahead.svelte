@@ -324,7 +324,7 @@
 
     $: selectedLabel =
         filterText === ""
-            ? items.find((item) => item.value == value)?.label ?? ""
+            ? (items.find((item) => item.value == value)?.label ?? "")
             : "";
     $: if (inputAttributes || !searchable) assignInputAttributes();
     $: if (value) dispatchSelectedItem();
@@ -382,7 +382,7 @@
             {/if}
 
             <input
-                class="input !bg-transparent border-0 ps-0 flex-grow"
+                class="input !bg-transparent !ring-0 ps-0 flex-grow"
                 class:cursor-pointer={!searchable}
                 on:keydown={handleKeyDown}
                 on:focus={handleFocus}
@@ -444,7 +444,8 @@
                             !isItemActive(item, value)}
                     >
                         <slot name="item" {item} index={i}>
-                            {item?.label}{#if item.detail} - {item?.detail}{/if}
+                            {item?.label}{#if item.detail}
+                                - {item?.detail}{/if}
                         </slot>
                     </div>
                 {/each}

@@ -2,6 +2,7 @@
     import { writable, type Writable } from "svelte/store";
     import type { InputType, Item } from "$lib";
     import { Typeahead } from "$lib";
+    import { twMerge } from "tailwind-merge";
 
     let {
         id,
@@ -54,16 +55,13 @@
     const baseInputClasses = type === "checkbox" ? "checkbox" : "input";
     const baseLabelClasses =
         type === "checkbox" ? "flex gap-2 items-center h-full" : "label";
-    let inputClasses = $derived(`${baseInputClasses} ${inputClass}`.trim());
-    let labelClasses = $derived(`${baseLabelClasses} ${labelClass}`.trim());
+    let inputClasses = $derived(twMerge(baseInputClasses, inputClass));
+    let labelClasses = $derived(
+        twMerge(baseLabelClasses, labelClass, hidden ? "hidden" : "")
+    );
 </script>
 
-<label
-    for={id}
-    class={labelClasses}
-    style="grid-column-start: span {colSpan}"
-    {hidden}
->
+<label for={id} class={labelClasses} style="grid-column-start: span {colSpan}">
     <span>{label}</span>
     {#if type === "text"}
         <input
