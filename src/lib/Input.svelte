@@ -259,6 +259,6 @@
         />
     {/if}
     {#if $errors && $errors.length > 0}
-        <small class="text-error-500">{errors}</small>
+        <small class="text-error-500">{$errors[0]}</small>
     {/if}
 </label>

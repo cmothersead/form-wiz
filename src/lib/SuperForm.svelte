@@ -4,6 +4,7 @@
     import { LabeledIcon, SuperInput } from "$lib";
     import type { FieldConfig, Layout } from "./index.js";
     import _ from "lodash";
+    import type { Snippet } from "svelte";
 
     const { merge } = _;
 
@@ -14,11 +15,17 @@
         form: formWithLayout,
         layout = formWithLayout.layout,
         action = formWithLayout.action,
+        header,
+        buttons,
+        footer,
     }: {
         id?: string | undefined;
         form: { form: Form; layout: Layout<Form>; action: string };
         layout?: Layout<Form> | undefined;
         action?: string;
+        header?: Snippet;
+        buttons?: Snippet;
+        footer?: Snippet;
     } = $props();
 
     const { form } = formWithLayout;
@@ -40,8 +47,12 @@
     });
 </script>
 
-<form {id} {action} class="container mx-auto p-4" method="POST" use:enhance>
+<form {id} {action} class="p-4" method="POST" use:enhance>
     <div class="flex flex-col gap-4">
+        {@render header?.()}
+        {#if layout.title}
+            <div class="text-2xl text-center">{layout.title}</div>
+        {/if}
         <div
             class="grid gap-2"
             style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
@@ -62,6 +73,11 @@
                 />
             {/each}
         </div>
-        <button class="btn variant-filled">Submit</button>
+        {#if buttons}
+            {@render buttons()}
+        {:else}
+            <button class="btn preset-filled">Submit</button>
+        {/if}
+        {@render footer?.()}
     </div>
 </form>

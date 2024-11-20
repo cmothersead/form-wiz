@@ -48,10 +48,12 @@ export type FieldConfig = {
     max?: number | Date;
 };
 export type PartialLayout<T extends Record<string, unknown>> = {
+    title?: string;
     columns?: number;
     fields?: { [key in keyof T]?: FieldConfig | false };
 };
 export type Layout<T extends Record<string, unknown>> = {
+    title?: string;
     columns: number;
     fields: Record<keyof T, FieldConfig | false>;
 };
