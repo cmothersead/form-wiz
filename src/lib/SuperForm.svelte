@@ -1,26 +1,24 @@
-<script lang="ts" generics="T extends AnyZodObject">
+<script lang="ts">
     import type { SuperForm } from "sveltekit-superforms";
-    import type { z, AnyZodObject } from "zod";
-    import { LabeledIcon, SuperInput } from "$lib";
+    import type { z, ZodTypeAny } from "zod";
+    import { SuperInput } from "$lib";
     import type { FieldConfig, Layout } from "./index.js";
-    import _ from "lodash";
     import type { Snippet } from "svelte";
-
-    const { merge } = _;
+    import { merge } from "lodash-es";
 
     type Form = SuperForm<z.infer<T>, unknown>;
 
     let {
         id = undefined,
-        form: formWithLayout,
-        layout = formWithLayout.layout,
-        action = formWithLayout.action,
+        form,
+        layout = form.layout,
+        action = form.action,
         header,
         buttons,
         footer,
     }: {
         id?: string | undefined;
-        form: { form: Form; layout: Layout<Form>; action: string };
+        form: Form & { layout: Layout<Form>; action: string };
         layout?: Layout<Form> | undefined;
         action?: string;
         header?: Snippet;
@@ -28,13 +26,10 @@
         footer?: Snippet;
     } = $props();
 
-    const { form } = formWithLayout;
     const { enhance } = form;
 
     let final: Layout<Form> = $derived(
-        layout != undefined
-            ? merge(formWithLayout.layout, layout)
-            : formWithLayout.layout
+        layout != undefined ? merge(form.layout, layout) : form.layout
     );
 
     let fields: [string, FieldConfig][] = $state([]);

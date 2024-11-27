@@ -1,19 +1,18 @@
-import _ from "lodash";
-const { merge } = _;
+import { merge } from "lodash-es";
 import {
     type FormPathLeaves,
     type SuperValidated,
     superValidate,
-    type SuperValidateOptions,
     type SuperForm,
     superForm,
     type FormOptions,
     dateProxy,
     formFieldProxy,
     numberProxy,
+    type JSONSchema,
 } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import type { AnyZodObject, z } from "zod";
+import { z, type AnyZodObject, type ZodTypeAny } from "zod";
 
 export const InputType = {
     checkbox: "checkbox",
@@ -57,6 +56,16 @@ export type Layout<T extends Record<string, unknown>> = {
     columns: number;
     fields: Record<keyof T, FieldConfig | false>;
 };
+// Copied directly from Superforms documentation
+type SuperValidateOptions<T extends ZodTypeAny> = {
+    errors?: boolean; // Add or remove errors from output (valid status is always preserved)
+    id?: string; // Form id, for multiple forms support. Set automatically by default
+    preprocessed?: (keyof z.infer<T>)[]; // Bypass superValidate data coercion for posted fields in this array
+    defaults?: T; // Override default values from the schema
+    jsonSchema?: JSONSchema; // Override JSON schema from the adapter
+    strict?: boolean; // If true, validate exactly the posted data, no defaults added
+    allowFiles?: boolean; // If false, set all posted File objects to undefined
+};
 
 export { default as Form } from "./SuperForm.svelte";
 export { default as Input } from "./Input.svelte";
@@ -64,54 +73,70 @@ export { default as SuperInput } from "./SuperInput.svelte";
 export { default as Typeahead } from "./Typeahead.svelte";
 export { default as LabeledIcon } from "./LabeledIcon.svelte";
 
-export async function wizCreate<T extends AnyZodObject>(
+export async function wizCreate<T extends ZodTypeAny>(
     schema: T,
     action: string,
     layout?: PartialLayout<z.infer<T>>,
-    options?: SuperValidateOptions
+    options?: SuperValidateOptions<T>
 ) {
     function getLayoutOptions(schema: T): Layout<z.infer<T>> {
         const defaultLayout = {
             columns: 1,
             fields: {},
-        };
+        } as Layout<z.infer<T>>;
 
         return Object.entries(schema._def.shape()).reduce(
             (layout, [name, value]) => {
-                while (value._def.innerType) {
-                    value = value._def.innerType;
+                while ((value as ZodTypeAny)._def.innerType) {
+                    value = (value as ZodTypeAny)._def.innerType;
                 }
-                switch (value._def.typeName.toLowerCase().replace("zod", "")) {
+                switch (
+                    (value as ZodTypeAny)._def.typeName
+                        .toLowerCase()
+                        .replace("zod", "")
+                ) {
                     case "number":
-                        layout.fields[name] = { type: "number" };
+                        layout.fields[name as keyof z.infer<T>] = {
+                            type: "number",
+                        };
                         break;
                     case "date":
-                        layout.fields[name] = { type: "date" };
+                        layout.fields[name as keyof z.infer<T>] = {
+                            type: "date",
+                        };
                         break;
                     case "boolean":
-                        layout.fields[name] = { type: "checkbox" };
+                        layout.fields[name as keyof z.infer<T>] = {
+                            type: "checkbox",
+                        };
                         break;
                     default:
-                        layout.fields[name] = {};
+                        layout.fields[name as keyof z.infer<T>] = {};
                         break;
                 }
                 return layout;
             },
-            Object.assign({}, defaultLayout)
+            defaultLayout
         );
     }
-    const form = await superValidate(zod(schema));
+    const form = await superValidate(zod(schema), options);
     const layoutOptions: Layout<z.infer<T>> = merge(
         getLayoutOptions(schema),
         layout
     );
 
-    return { form, action, layout: layoutOptions };
+    return { ...form, action, layout: layoutOptions };
+}
+
+export function wizValidate<T extends AnyZodObject>(
+    request: Request,
+    schema: T
+) {
+    return superValidate(request, zod(schema));
 }
 
 export function wizForm<T extends AnyZodObject, M = any>(
-    validated: {
-        form: SuperValidated<z.infer<T>, M>;
+    validated: SuperValidated<z.infer<T>, M> & {
         layout: Layout<z.infer<T>>;
         action: string;
     },
@@ -120,7 +145,7 @@ export function wizForm<T extends AnyZodObject, M = any>(
     return {
         action: validated.action,
         layout: validated.layout,
-        form: superForm(validated.form, options),
+        ...superForm(validated, options),
     };
 }
 

@@ -31,7 +31,6 @@
     "@sveltejs/kit": "^2.7.2",
     "@sveltejs/package": "^2.3.6",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
-    "@types/lodash": "^4.14.198",
     "publint": "^0.1.9",
     "svelte": "^5.0.5",
     "svelte-check": "^4.0.5",
@@ -44,8 +43,9 @@
   "type": "module",
   "dependencies": {
     "@iconify/svelte": "^3.1.4",
+    "@types/lodash-es": "^4.17.12",
     "fast-fuzzy": "^1.12.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "svelte-floating-ui": "^1.5.3",
     "sveltekit-superforms": "^2.20.0",
     "tailwind-merge": "^2.5.4",
