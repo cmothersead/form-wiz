@@ -7,8 +7,7 @@
         type Item,
         InputType,
     } from "./index.js";
-    import _ from "lodash";
-    const { startCase } = _;
+    import { startCase } from "lodash-es";
 
     type T = $$Generic<AnyZodObject>;
 

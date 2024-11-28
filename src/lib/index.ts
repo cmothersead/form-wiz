@@ -11,8 +11,7 @@ import {
     numberProxy,
     type JSONSchema,
 } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { z, type AnyZodObject, type ZodTypeAny } from "zod";
+import { z, type ZodTypeAny } from "zod";
 
 export const InputType = {
     checkbox: "checkbox",
@@ -75,6 +74,7 @@ export { default as LabeledIcon } from "./LabeledIcon.svelte";
 
 export async function wizCreate<T extends ZodTypeAny>(
     schema: T,
+    adapter: unknown,
     action: string,
     layout?: PartialLayout<z.infer<T>>,
     options?: SuperValidateOptions<T>
@@ -119,7 +119,7 @@ export async function wizCreate<T extends ZodTypeAny>(
             defaultLayout
         );
     }
-    const form = await superValidate(zod(schema), options);
+    const form = await superValidate(adapter(schema), options);
     const layoutOptions: Layout<z.infer<T>> = merge(
         getLayoutOptions(schema),
         layout
@@ -128,14 +128,15 @@ export async function wizCreate<T extends ZodTypeAny>(
     return { ...form, action, layout: layoutOptions };
 }
 
-export function wizValidate<T extends AnyZodObject>(
+export function wizValidate<T extends ZodTypeAny>(
     request: Request,
-    schema: T
+    schema: T,
+    adapter: unknown
 ) {
-    return superValidate(request, zod(schema));
+    return superValidate(request, adapter(schema));
 }
 
-export function wizForm<T extends AnyZodObject, M = any>(
+export function wizForm<T extends ZodTypeAny, M = any>(
     validated: SuperValidated<z.infer<T>, M> & {
         layout: Layout<z.infer<T>>;
         action: string;
@@ -175,7 +176,7 @@ const defaultOptions: DefaultOptions = {
 };
 
 export function typedFormFieldProxy<
-    T extends AnyZodObject,
+    T extends ZodTypeAny,
     Path extends FormPathLeaves<z.infer<T>>
 >(
     form: SuperForm<z.infer<T>>,
