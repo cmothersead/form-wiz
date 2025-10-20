@@ -1,17 +1,17 @@
 import { merge } from "lodash-es";
 import {
-    type FormPathLeaves,
     type SuperValidated,
     superValidate,
     type SuperForm,
     superForm,
     type FormOptions,
-    dateProxy,
-    formFieldProxy,
-    numberProxy,
     type JSONSchema,
+    type FormPathLeaves,
+    formFieldProxy,
+    dateProxy,
+    numberProxy,
 } from "sveltekit-superforms";
-import { z, type ZodTypeAny } from "zod";
+import type { ValidationAdapter } from "sveltekit-superforms/adapters";
 
 export const InputType = {
     checkbox: "checkbox",
@@ -56,10 +56,10 @@ export type Layout<T extends Record<string, unknown>> = {
     fields: Record<keyof T, FieldConfig | false>;
 };
 // Copied directly from Superforms documentation
-type SuperValidateOptions<T extends ZodTypeAny> = {
+type SuperValidateOptions<T> = {
     errors?: boolean; // Add or remove errors from output (valid status is always preserved)
     id?: string; // Form id, for multiple forms support. Set automatically by default
-    preprocessed?: (keyof z.infer<T>)[]; // Bypass superValidate data coercion for posted fields in this array
+    preprocessed?: (keyof T)[]; // Bypass superValidate data coercion for posted fields in this array
     defaults?: T; // Override default values from the schema
     jsonSchema?: JSONSchema; // Override JSON schema from the adapter
     strict?: boolean; // If true, validate exactly the posted data, no defaults added
@@ -72,46 +72,43 @@ export { default as SuperInput } from "./SuperInput.svelte";
 export { default as Typeahead } from "./Typeahead.svelte";
 export { default as LabeledIcon } from "./LabeledIcon.svelte";
 
-export async function wizCreate<T extends ZodTypeAny>(
-    schema: T,
-    adapter: unknown,
+export async function wizCreate<T extends Record<string, unknown>>(
+    adapter: ValidationAdapter<T>,
     action: string,
-    layout?: PartialLayout<z.infer<T>>,
+    layout?: PartialLayout<T>,
     options?: SuperValidateOptions<T>
-) {
-    function getLayoutOptions(schema: T): Layout<z.infer<T>> {
+): Promise<SuperValidated<T> & { action: string; layout: Layout<T> }> {
+    function getLayoutOptions(adapter: ValidationAdapter<T>): Layout<T> {
         const defaultLayout = {
             columns: 1,
             fields: {},
-        } as Layout<z.infer<T>>;
+        } as Layout<T>;
 
-        return Object.entries(schema._def.shape()).reduce(
+        if (adapter.jsonSchema.properties == undefined) {
+            return defaultLayout;
+        }
+        console.log(adapter.jsonSchema.properties);
+
+        return Object.entries(adapter.jsonSchema.properties).reduce(
             (layout, [name, value]) => {
-                while ((value as ZodTypeAny)._def.innerType) {
-                    value = (value as ZodTypeAny)._def.innerType;
-                }
-                switch (
-                    (value as ZodTypeAny)._def.typeName
-                        .toLowerCase()
-                        .replace("zod", "")
-                ) {
+                switch (value.type) {
                     case "number":
-                        layout.fields[name as keyof z.infer<T>] = {
+                        layout.fields[name as keyof T] = {
                             type: "number",
                         };
                         break;
                     case "date":
-                        layout.fields[name as keyof z.infer<T>] = {
+                        layout.fields[name as keyof T] = {
                             type: "date",
                         };
                         break;
                     case "boolean":
-                        layout.fields[name as keyof z.infer<T>] = {
+                        layout.fields[name as keyof T] = {
                             type: "checkbox",
                         };
                         break;
                     default:
-                        layout.fields[name as keyof z.infer<T>] = {};
+                        layout.fields[name as keyof T] = {};
                         break;
                 }
                 return layout;
@@ -119,30 +116,30 @@ export async function wizCreate<T extends ZodTypeAny>(
             defaultLayout
         );
     }
-    const form = await superValidate(adapter(schema), options);
-    const layoutOptions: Layout<z.infer<T>> = merge(
-        getLayoutOptions(schema),
-        layout
-    );
+    const form = await superValidate(adapter, options);
+    const layoutOptions: Layout<T> = merge(getLayoutOptions(adapter), layout);
 
     return { ...form, action, layout: layoutOptions };
 }
 
-export function wizValidate<T extends ZodTypeAny>(
+export function wizValidate<T extends Record<string, unknown>>(
     request: Request,
     schema: T,
-    adapter: unknown
-) {
+    adapter: (schema: T) => ValidationAdapter<T>
+): Promise<unknown> {
     return superValidate(request, adapter(schema));
 }
 
-export function wizForm<T extends ZodTypeAny, M = any>(
-    validated: SuperValidated<z.infer<T>, M> & {
-        layout: Layout<z.infer<T>>;
+export function wizForm<T extends Record<string, unknown>, M = any>(
+    validated: SuperValidated<T, M> & {
+        layout: Layout<T>;
         action: string;
     },
-    options: FormOptions<z.infer<T>, M> = {}
-) {
+    options: FormOptions<T, M> = {}
+): SuperForm<T> & {
+    layout: Layout<T>;
+    action: string;
+} {
     return {
         action: validated.action,
         layout: validated.layout,
@@ -176,10 +173,10 @@ const defaultOptions: DefaultOptions = {
 };
 
 export function typedFormFieldProxy<
-    T extends ZodTypeAny,
-    Path extends FormPathLeaves<z.infer<T>>
+    T extends Record<string, unknown>,
+    Path extends FormPathLeaves<T>
 >(
-    form: SuperForm<z.infer<T>>,
+    form: SuperForm<T>,
     path: Path,
     type: "number" | "int" | "boolean" | "date" | "string" = "string",
     options: DefaultOptions = defaultOptions
@@ -189,7 +186,7 @@ export function typedFormFieldProxy<
         proxy.value = dateProxy(form.form, path, options);
     }
     if (type === "number") {
-        proxy.value = numberProxy(form.form, path);
+        proxy.value = numberProxy(form.form, path, options);
     }
     return proxy;
 }

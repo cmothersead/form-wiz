@@ -1,12 +1,11 @@
 <script lang="ts">
     import type { SuperForm } from "sveltekit-superforms";
-    import type { z, ZodTypeAny } from "zod";
     import { SuperInput } from "$lib";
     import type { FieldConfig, Layout } from "./index.js";
     import type { Snippet } from "svelte";
     import { merge } from "lodash-es";
 
-    type Form = SuperForm<z.infer<T>, unknown>;
+    type Form = SuperForm<Record<string, unknown>, unknown>;
 
     let {
         id = undefined,

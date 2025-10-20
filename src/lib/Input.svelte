@@ -41,7 +41,7 @@
         min: string;
         max: string;
         hidden: boolean;
-        value: string | number | Date | boolean;
+        value: string | number | Date | boolean | unknown;
         labelClass: string;
         inputClass: string;
         colSpan: number;
