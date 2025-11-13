@@ -1,7 +1,7 @@
 <script lang="ts">
     import { wizForm } from "$lib";
     import SuperDebug from "sveltekit-superforms";
-    import SuperForm from "$lib/SuperForm.svelte";
+    import SuperForm from "$lib/WizForm.svelte";
     let { data } = $props();
     // let { layout } = $derived(data.form);
     const wizform = wizForm(data.form);

@@ -66,9 +66,9 @@ type SuperValidateOptions<T> = {
     allowFiles?: boolean; // If false, set all posted File objects to undefined
 };
 
-export { default as Form } from "./SuperForm.svelte";
+export { default as WizForm } from "./WizForm.svelte";
 export { default as Input } from "./Input.svelte";
-export { default as SuperInput } from "./SuperInput.svelte";
+export { default as WizInput } from "./WizInput.svelte";
 export { default as Typeahead } from "./Typeahead.svelte";
 export { default as LabeledIcon } from "./LabeledIcon.svelte";
 
@@ -87,7 +87,6 @@ export async function wizCreate<T extends Record<string, unknown>>(
         if (adapter.jsonSchema.properties == undefined) {
             return defaultLayout;
         }
-        console.log(adapter.jsonSchema.properties);
 
         return Object.entries(adapter.jsonSchema.properties).reduce(
             (layout, [name, value]) => {
@@ -126,7 +125,7 @@ export function wizValidate<T extends Record<string, unknown>>(
     request: Request,
     schema: T,
     adapter: (schema: T) => ValidationAdapter<T>
-): Promise<unknown> {
+) {
     return superValidate(request, adapter(schema));
 }
 

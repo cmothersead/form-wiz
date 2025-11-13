@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { SuperForm } from "sveltekit-superforms";
-    import { SuperInput } from "$lib";
+    import { WizInput } from "$lib";
     import type { FieldConfig, Layout } from "./index.js";
     import type { Snippet } from "svelte";
     import { merge } from "lodash-es";
@@ -45,14 +45,14 @@
     <div class="flex flex-col gap-4">
         {@render header?.()}
         {#if layout.title}
-            <div class="text-2xl text-center">{layout.title}</div>
+            <div class="h2 text-center">{layout.title}</div>
         {/if}
         <div
             class="grid gap-2"
             style="grid-template-columns: repeat({final.columns}, minmax(0, 1fr))"
         >
             {#each fields as [field, { type, label, colSpan, items, searchable, indexType, hidden, min, max }]}
-                <SuperInput
+                <WizInput
                     {form}
                     {field}
                     {type}
